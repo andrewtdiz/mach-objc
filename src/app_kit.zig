@@ -567,6 +567,21 @@ pub const WebView = opaque {
     }
 };
 
+pub const Image = opaque {
+    pub const InternalInfo = objc.ExternClass("NSImage", @This(), ObjectInterface, &.{});
+    pub const as = InternalInfo.as;
+    pub const retain = InternalInfo.retain;
+    pub const release = InternalInfo.release;
+    pub const autorelease = InternalInfo.autorelease;
+    pub const new = InternalInfo.new;
+    pub const alloc = InternalInfo.alloc;
+    pub const allocInit = InternalInfo.allocInit;
+
+    pub fn initWithContentsOfFile(self_: *@This(), path_: *String) ?*@This() {
+        return objc.msgSend(self_, "initWithContentsOfFile:", ?*@This(), .{path_});
+    }
+};
+
 pub const Color = opaque {
     pub const InternalInfo = objc.ExternClass("NSColor", @This(), ObjectInterface, &.{});
     pub const as = InternalInfo.as;

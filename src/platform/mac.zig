@@ -455,6 +455,7 @@ pub const MacPlatform = struct {
     }
 
     pub fn setClipboardText(self: *MacPlatform, text: []const u8) !void {
+        std.debug.print("[Clipboard] setClipboardText: \"{s}\"\n", .{text});
         const pasteboard = Pasteboard.generalPasteboard();
         _ = pasteboard.clearContents();
         const text_z = try self.allocator.dupeZ(u8, text);
@@ -465,14 +466,19 @@ pub const MacPlatform = struct {
         if (!pasteboard.setString_forType(ns_string, NSPasteboardTypeString)) {
             return error.ClipboardSetFailed;
         }
+        std.debug.print("[Clipboard] setClipboardText: success\n", .{});
     }
 
     pub fn clipboardText(self: *MacPlatform, allocator: std.mem.Allocator) ![]const u8 {
         _ = self;
         const pasteboard = Pasteboard.generalPasteboard();
-        const ns_string = pasteboard.stringForType(NSPasteboardTypeString) orelse return "";
+        const ns_string = pasteboard.stringForType(NSPasteboardTypeString) orelse {
+            std.debug.print("[Clipboard] clipboardText: empty\n", .{});
+            return "";
+        };
         const c_string = ns_string.UTF8String();
         const slice = std.mem.span(c_string);
+        std.debug.print("[Clipboard] clipboardText: \"{s}\"\n", .{slice});
         return allocator.dupe(u8, slice);
     }
 
@@ -556,6 +562,7 @@ const ViewCallbacks = struct {
         _ = block;
         const plat = active_platform orelse return;
         updateMousePosition(plat, event.locationInWindow());
+        // std.debug.print("[Input] mouseMoved: ({}, {})\n", .{ plat.mouse_state.x, plat.mouse_state.y });
         plat.notifyMouseMove();
     }
 
@@ -564,6 +571,7 @@ const ViewCallbacks = struct {
         const plat = active_platform orelse return;
         updateMousePosition(plat, event.locationInWindow());
         const button = mouseButtonFromNumber(@intCast(event.buttonNumber())) orelse return;
+        // std.debug.print("[Input] mouseDown: {s} at ({}, {})\n", .{ @tagName(button), plat.mouse_state.x, plat.mouse_state.y });
         if (button == .left) {
             plat.mouse_state.left_button_down = true;
         } else if (button == .right) {
@@ -577,6 +585,7 @@ const ViewCallbacks = struct {
         const plat = active_platform orelse return;
         updateMousePosition(plat, event.locationInWindow());
         const button = mouseButtonFromNumber(@intCast(event.buttonNumber())) orelse return;
+        // std.debug.print("[Input] mouseUp: {s} at ({}, {})\n", .{ @tagName(button), plat.mouse_state.x, plat.mouse_state.y });
         if (button == .left) {
             plat.mouse_state.left_button_down = false;
         } else if (button == .right) {
@@ -594,6 +603,7 @@ const ViewCallbacks = struct {
             delta_x *= 0.1;
             delta_y *= 0.1;
         }
+        // std.debug.print("[Input] scrollWheel: dx={d:.2}, dy={d:.2}\n", .{ delta_x, delta_y });
         plat.notifyMouseWheel(@floatCast(delta_x), @floatCast(delta_y));
     }
 
@@ -604,6 +614,7 @@ const ViewCallbacks = struct {
         if (key == window_types.Key.unknown) return;
         const mods = modifierStateFromFlags(event.modifierFlags());
         const action: PlatformKeyAction = if (event.isARepeat()) .repeat else .down;
+        // std.debug.print("[Input] keyDown: {s} ({s})\n", .{ @tagName(key), @tagName(action) });
         appendKeyEvent(plat, key, action, mods);
         updateLetterKeyState(plat, key, true);
     }
@@ -616,6 +627,7 @@ const ViewCallbacks = struct {
         const len = std.unicode.utf8CodepointSequenceLength(cp) catch return;
         var buffer: [4]u8 = undefined;
         const written = std.unicode.utf8Encode(cp, buffer[0..len]) catch return;
+        // std.debug.print("[Input] insertText: \"{s}\"\n", .{buffer[0..written]});
         var text_event = PlatformTextEvent{};
         text_event.len = @intCast(written);
         std.mem.copyForwards(u8, text_event.buffer[0..written], buffer[0..written]);
@@ -630,6 +642,7 @@ const ViewCallbacks = struct {
         const key = keyFromKeycode(event.keyCode());
         if (key == window_types.Key.unknown) return;
         const mods = modifierStateFromFlags(event.modifierFlags());
+        std.debug.print("[Input] keyUp: {s}\n", .{@tagName(key)});
         appendKeyEvent(plat, key, .up, mods);
         updateLetterKeyState(plat, key, false);
     }
@@ -637,6 +650,7 @@ const ViewCallbacks = struct {
     pub fn flagsChanged(block: *objc.foundation.BlockLiteral(u8), event: *objc.app_kit.Event) callconv(.c) void {
         _ = block;
         const plat = active_platform orelse return;
+        // std.debug.print("[Input] flagsChanged: 0x{x}\n", .{event.modifierFlags()});
         handleFlagsChanged(plat, event);
     }
 };

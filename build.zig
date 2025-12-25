@@ -96,4 +96,33 @@ pub fn build(b: *std.Build) void {
     const run_window_example = b.addRunArtifact(window_example);
     const run_window_example_step = b.step("run-window-example", "Run the macOS window example");
     run_window_example_step.dependOn(&run_window_example.step);
+
+    // FFI dynamic library for Bun
+    const ffi_module = b.createModule(.{
+        .root_source_file = b.path("src/ffi_exports.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    ffi_module.addImport("mach-objc", module);
+    ffi_module.addImport("dvui", dvui_module);
+    ffi_module.addImport("wgpu", wgpu_module);
+
+    const ffi_lib = b.addLibrary(.{
+        .name = "mach-ffi",
+        .linkage = .dynamic,
+        .root_module = ffi_module,
+    });
+
+    if (target.result.os.tag == .macos) {
+        ffi_lib.root_module.linkFramework("Foundation", .{});
+        ffi_lib.root_module.linkFramework("Metal", .{});
+        ffi_lib.root_module.linkFramework("QuartzCore", .{});
+        ffi_lib.root_module.linkFramework("WebKit", .{});
+    }
+
+    const install_ffi_lib = b.addInstallArtifact(ffi_lib, .{});
+    b.getInstallStep().dependOn(&install_ffi_lib.step);
+
+    const ffi_step = b.step("ffi", "Build the FFI dynamic library for Bun");
+    ffi_step.dependOn(&install_ffi_lib.step);
 }
