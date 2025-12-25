@@ -1,0 +1,191 @@
+pub const MouseButton = enum {
+    left, // 0
+    middle,
+    right,
+    back,
+    forward, // 4
+
+    pub const max = MouseButton.forward;
+};
+
+pub const Modifier = enum {
+    shift,
+    ctrl,
+    alt,
+    meta,
+};
+
+pub const CursorType = enum {
+    // General
+    auto,
+    default,
+    none,
+
+    // Links & Status
+    pointer, // aka hand
+    context_menu,
+    help,
+
+    // Selection
+    text,
+    vertical_text,
+    select,
+
+    // Drag & Drop
+    grab,
+    grabbing,
+    copy,
+    move,
+    alias,
+    not_allowed,
+
+    // Resizing
+    resize_all,
+    resize_col,
+    resize_row,
+    resize_n,
+    resize_ne,
+    resize_nw,
+    resize_s,
+    resize_se,
+    resize_sw,
+    resize_e,
+    resize_w,
+
+    // Scrolling
+    scroll_all,
+
+    // Zoom
+    zoom_in,
+    zoom_out,
+
+    // Waiting/Loading
+    wait,
+    progress,
+
+    // Other
+    crosshair,
+    cell,
+};
+
+pub const Key = enum {
+    a,
+    b,
+    c,
+    d,
+    e,
+    f,
+    g,
+    h,
+    i,
+    j,
+    k,
+    l,
+    m,
+    n,
+    o,
+    p,
+    q,
+    r,
+    s,
+    t,
+    u,
+    v,
+    w,
+    x,
+    y,
+    z,
+
+    zero,
+    one,
+    two,
+    three,
+    four,
+    five,
+    six,
+    seven,
+    eight,
+    nine,
+
+    f1,
+    f2,
+    f3,
+    f4,
+    f5,
+    f6,
+    f7,
+    f8,
+    f9,
+    f10,
+    f11,
+    f12,
+    f13,
+    f14,
+    f15,
+    f16,
+    f17,
+    f18,
+    f19,
+    f20,
+    f21,
+    f22,
+    f23,
+    f24,
+    f25,
+
+    kp_divide,
+    kp_multiply,
+    kp_subtract,
+    kp_add,
+    kp_0,
+    kp_1,
+    kp_2,
+    kp_3,
+    kp_4,
+    kp_5,
+    kp_6,
+    kp_7,
+    kp_8,
+    kp_9,
+    kp_decimal,
+    kp_comma,
+    kp_equal,
+    kp_enter,
+
+    enter,
+    escape,
+    tab,
+    left_shift,
+    right_shift,
+    left_control,
+    right_control,
+    left_alt,
+    right_alt,
+    left_super,
+    right_super,
+    menu,
+    num_lock,
+    caps_lock,
+    print,
+    scroll_lock,
+    pause,
+    delete,
+    home,
+    end,
+    page_up,
+    page_down,
+    insert,
+    left,
+    right,
+    up,
+    down,
+    backspace,
+    space,
+    minus,
+    equal,
+    left_bracket,
+    right_bracket,
+    backslash,
+    semicolon,
+    apostrophe,
+};

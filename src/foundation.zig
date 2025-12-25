@@ -345,6 +345,10 @@ pub const Date = opaque {
     pub fn dateWithTimeIntervalSinceNow(secs_: TimeInterval) *@This() {
         return objc.msgSend(@This().InternalInfo.class(), "dateWithTimeIntervalSinceNow:", *@This(), .{secs_});
     }
+
+    pub fn distantPast() *@This() {
+        return objc.msgSend(@This().InternalInfo.class(), "distantPast", *@This(), .{});
+    }
 };
 
 pub fn Dictionary(comptime KeyType: type, comptime ObjectType: type) type {
@@ -731,10 +735,10 @@ pub const ProcessInfo = opaque {
         return objc.msgSend(self_, "endActivity:", void, .{activity_});
     }
     // pub fn performActivityWithOptions_reason_usingBlock(self_: *@This(), options_: ActivityOptions, reason_: *String, block_: void) void {
-    //     return @as(*const fn (*@This(), *c.objc_selector, ActivityOptions, *String, void) callconv(.C) void, @ptrCast(&c.objc_msgSend))(self_, "performActivityWithOptions:reason:usingBlock:", options_, reason_, block_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, ActivityOptions, *String, void) callconv(.c) void, @ptrCast(&c.objc_msgSend))(self_, "performActivityWithOptions:reason:usingBlock:", options_, reason_, block_);
     // }
     // pub fn performExpiringActivityWithReason_usingBlock(self_: *@This(), reason_: *String, block_: void) void {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *String, void) callconv(.C) void, @ptrCast(&c.objc_msgSend))(self_, "performExpiringActivityWithReason:usingBlock:", reason_, block_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *String, void) callconv(.c) void, @ptrCast(&c.objc_msgSend))(self_, "performExpiringActivityWithReason:usingBlock:", reason_, block_);
     // }
     pub fn thermalState(self_: *@This()) ProcessInfoThermalState {
         return objc.msgSend(self_, "thermalState", ProcessInfoThermalState, .{});
@@ -836,16 +840,16 @@ pub const String = opaque {
         return objc.msgSend(self_, "rangeOfString:options:range:", Range, .{ searchString_, mask_, rangeOfReceiverToSearch_ });
     }
     // pub fn rangeOfString_options_range_locale(self_: *@This(), searchString_: *String, mask_: StringCompareOptions, rangeOfReceiverToSearch_: Range, locale_: ?*Locale) Range {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *String, StringCompareOptions, Range, ?*Locale) callconv(.C) Range, @ptrCast(&c.objc_msgSend))(self_, "rangeOfString:options:range:locale:", searchString_, mask_, rangeOfReceiverToSearch_, locale_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *String, StringCompareOptions, Range, ?*Locale) callconv(.c) Range, @ptrCast(&c.objc_msgSend))(self_, "rangeOfString:options:range:locale:", searchString_, mask_, rangeOfReceiverToSearch_, locale_);
     // }
     // pub fn rangeOfCharacterFromSet(self_: *@This(), searchSet_: *CharacterSet) Range {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet) callconv(.C) Range, @ptrCast(&c.objc_msgSend))(self_, "rangeOfCharacterFromSet:", searchSet_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet) callconv(.c) Range, @ptrCast(&c.objc_msgSend))(self_, "rangeOfCharacterFromSet:", searchSet_);
     // }
     // pub fn rangeOfCharacterFromSet_options(self_: *@This(), searchSet_: *CharacterSet, mask_: StringCompareOptions) Range {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet, StringCompareOptions) callconv(.C) Range, @ptrCast(&c.objc_msgSend))(self_, "rangeOfCharacterFromSet:options:", searchSet_, mask_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet, StringCompareOptions) callconv(.c) Range, @ptrCast(&c.objc_msgSend))(self_, "rangeOfCharacterFromSet:options:", searchSet_, mask_);
     // }
     // pub fn rangeOfCharacterFromSet_options_range(self_: *@This(), searchSet_: *CharacterSet, mask_: StringCompareOptions, rangeOfReceiverToSearch_: Range) Range {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet, StringCompareOptions, Range) callconv(.C) Range, @ptrCast(&c.objc_msgSend))(self_, "rangeOfCharacterFromSet:options:range:", searchSet_, mask_, rangeOfReceiverToSearch_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet, StringCompareOptions, Range) callconv(.c) Range, @ptrCast(&c.objc_msgSend))(self_, "rangeOfCharacterFromSet:options:range:", searchSet_, mask_, rangeOfReceiverToSearch_);
     // }
     pub fn rangeOfComposedCharacterSequenceAtIndex(self_: *@This(), index_: UInteger) Range {
         return objc.msgSend(self_, "rangeOfComposedCharacterSequenceAtIndex:", Range, .{index_});
@@ -860,13 +864,13 @@ pub const String = opaque {
         return objc.msgSend(self_, "stringByAppendingFormat:", *String, .{format_});
     }
     // pub fn uppercaseStringWithLocale(self_: *@This(), locale_: ?*Locale) *String {
-    //     return @as(*const fn (*@This(), *c.objc_selector, ?*Locale) callconv(.C) *String, @ptrCast(&c.objc_msgSend))(self_, "uppercaseStringWithLocale:", locale_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, ?*Locale) callconv(.c) *String, @ptrCast(&c.objc_msgSend))(self_, "uppercaseStringWithLocale:", locale_);
     // }
     // pub fn lowercaseStringWithLocale(self_: *@This(), locale_: ?*Locale) *String {
-    //     return @as(*const fn (*@This(), *c.objc_selector, ?*Locale) callconv(.C) *String, @ptrCast(&c.objc_msgSend))(self_, "lowercaseStringWithLocale:", locale_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, ?*Locale) callconv(.c) *String, @ptrCast(&c.objc_msgSend))(self_, "lowercaseStringWithLocale:", locale_);
     // }
     // pub fn capitalizedStringWithLocale(self_: *@This(), locale_: ?*Locale) *String {
-    //     return @as(*const fn (*@This(), *c.objc_selector, ?*Locale) callconv(.C) *String, @ptrCast(&c.objc_msgSend))(self_, "capitalizedStringWithLocale:", locale_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, ?*Locale) callconv(.c) *String, @ptrCast(&c.objc_msgSend))(self_, "capitalizedStringWithLocale:", locale_);
     // }
     pub fn getLineStart_end_contentsEnd_forRange(self_: *@This(), startPtr_: ?*UInteger, lineEndPtr_: ?*UInteger, contentsEndPtr_: ?*UInteger, range_: Range) void {
         return objc.msgSend(self_, "getLineStart:end:contentsEnd:forRange:", void, .{ startPtr_, lineEndPtr_, contentsEndPtr_, range_ });
@@ -883,13 +887,13 @@ pub const String = opaque {
     // pub fn enumerateSubstringsInRange_options_usingBlock(self_: *@This(), range_: Range, opts_: StringEnumerationOptions, context: anytype, comptime block_: fn (ctx: @TypeOf(context), _: ?*String, _: Range, _: Range, _: *bool) void) void {
     //     const Literal = BlockLiteral(@TypeOf(context));
     //     const Helper = struct {
-    //         pub fn cCallback(literal: *Literal, a0: ?*String, a1: Range, a2: Range, a3: *bool) callconv(.C) void {
+    //         pub fn cCallback(literal: *Literal, a0: ?*String, a1: Range, a2: Range, a3: *bool) callconv(.c) void {
     //             block_(literal.context, a0, a1, a2, a3);
     //         }
     //     };
     //     const descriptor = BlockDescriptor{ .reserved = 0, .size = @sizeOf(Literal) };
     //     const block = Literal{ .isa = _NSConcreteStackBlock, .flags = 0, .reserved = 0, .invoke = @ptrCast(&Helper.cCallback), .descriptor = &descriptor, .context = context };
-    //     return @as(*const fn (*@This(), *c.objc_selector, Range, StringEnumerationOptions, *const anyopaque) callconv(.C) void, @ptrCast(&c.objc_msgSend))(self_, "enumerateSubstringsInRange:options:usingBlock:", range_, opts_, @ptrCast(&block));
+    //     return @as(*const fn (*@This(), *c.objc_selector, Range, StringEnumerationOptions, *const anyopaque) callconv(.c) void, @ptrCast(&c.objc_msgSend))(self_, "enumerateSubstringsInRange:options:usingBlock:", range_, opts_, @ptrCast(&block));
     // }
     pub fn enumerateLinesUsingBlock(self_: *@This(), block_: *Block(fn (*String, bool) void)) void {
         return objc.msgSend(self_, "enumerateLinesUsingBlock:", void, .{block_});
@@ -910,7 +914,7 @@ pub const String = opaque {
         return objc.msgSend(self_, "getCString:maxLength:encoding:", bool, .{ buffer_, maxBufferCount_, encoding_ });
     }
     // pub fn getBytes_maxLength_usedLength_encoding_options_range_remainingRange(self_: *@This(), buffer_: ?*anyopaque, maxBufferCount_: UInteger, usedBufferCount_: ?*UInteger, encoding_: StringEncoding, options_: StringEncodingConversionOptions, range_: Range, leftover_: RangePointer) bool {
-    //     return @as(*const fn (*@This(), *c.objc_selector, ?*anyopaque, UInteger, ?*UInteger, StringEncoding, StringEncodingConversionOptions, Range, RangePointer) callconv(.C) bool, @ptrCast(&c.objc_msgSend))(self_, "getBytes:maxLength:usedLength:encoding:options:range:remainingRange:", buffer_, maxBufferCount_, usedBufferCount_, encoding_, options_, range_, leftover_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, ?*anyopaque, UInteger, ?*UInteger, StringEncoding, StringEncodingConversionOptions, Range, RangePointer) callconv(.c) bool, @ptrCast(&c.objc_msgSend))(self_, "getBytes:maxLength:usedLength:encoding:options:range:remainingRange:", buffer_, maxBufferCount_, usedBufferCount_, encoding_, options_, range_, leftover_);
     // }
     pub fn maximumLengthOfBytesUsingEncoding(self_: *@This(), enc_: StringEncoding) UInteger {
         return objc.msgSend(self_, "maximumLengthOfBytesUsingEncoding:", UInteger, .{enc_});
@@ -925,16 +929,16 @@ pub const String = opaque {
         return objc.msgSend(self_, "componentsSeparatedByString:", *Array(*String), .{separator_});
     }
     // pub fn componentsSeparatedByCharactersInSet(self_: *@This(), separator_: *CharacterSet) *Array(*String) {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet) callconv(.C) *Array(*String), @ptrCast(&c.objc_msgSend))(self_, "componentsSeparatedByCharactersInSet:", separator_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet) callconv(.c) *Array(*String), @ptrCast(&c.objc_msgSend))(self_, "componentsSeparatedByCharactersInSet:", separator_);
     // }
     // pub fn stringByTrimmingCharactersInSet(self_: *@This(), set_: *CharacterSet) *String {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet) callconv(.C) *String, @ptrCast(&c.objc_msgSend))(self_, "stringByTrimmingCharactersInSet:", set_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *CharacterSet) callconv(.c) *String, @ptrCast(&c.objc_msgSend))(self_, "stringByTrimmingCharactersInSet:", set_);
     // }
     pub fn stringByPaddingToLength_withString_startingAtIndex(self_: *@This(), newLength_: UInteger, padString_: *String, padIndex_: UInteger) *String {
         return objc.msgSend(self_, "stringByPaddingToLength:withString:startingAtIndex:", *String, .{ newLength_, padString_, padIndex_ });
     }
     // pub fn stringByFoldingWithOptions_locale(self_: *@This(), options_: StringCompareOptions, locale_: ?*Locale) *String {
-    //     return @as(*const fn (*@This(), *c.objc_selector, StringCompareOptions, ?*Locale) callconv(.C) *String, @ptrCast(&c.objc_msgSend))(self_, "stringByFoldingWithOptions:locale:", options_, locale_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, StringCompareOptions, ?*Locale) callconv(.c) *String, @ptrCast(&c.objc_msgSend))(self_, "stringByFoldingWithOptions:locale:", options_, locale_);
     // }
     pub fn stringByReplacingOccurrencesOfString_withString_options_range(self_: *@This(), target_: *String, replacement_: *String, options_: StringCompareOptions, searchRange_: Range) *String {
         return objc.msgSend(self_, "stringByReplacingOccurrencesOfString:withString:options:range:", *String, .{ target_, replacement_, options_, searchRange_ });
@@ -946,7 +950,7 @@ pub const String = opaque {
         return objc.msgSend(self_, "stringByReplacingCharactersInRange:withString:", *String, .{ range_, replacement_ });
     }
     // pub fn stringByApplyingTransform_reverse(self_: *@This(), transform_: StringTransform, reverse_: bool) ?*String {
-    //     return @as(*const fn (*@This(), *c.objc_selector, StringTransform, bool) callconv(.C) ?*String, @ptrCast(&c.objc_msgSend))(self_, "stringByApplyingTransform:reverse:", transform_, reverse_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, StringTransform, bool) callconv(.c) ?*String, @ptrCast(&c.objc_msgSend))(self_, "stringByApplyingTransform:reverse:", transform_, reverse_);
     // }
     pub fn writeToURL_atomically_encoding_error(self_: *@This(), url_: *URL, useAuxiliaryFile_: bool, enc_: StringEncoding, error_: ?*?*Error) bool {
         return objc.msgSend(self_, "writeToURL:atomically:encoding:error:", bool, .{ url_, useAuxiliaryFile_, enc_, error_ });
@@ -973,13 +977,13 @@ pub const String = opaque {
         return objc.msgSend(self_, "initWithFormat:", *@This(), .{format_});
     }
     // pub fn initWithFormat_arguments(self_: *@This(), format_: *String, argList_: va_list) *@This() {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *String, va_list) callconv(.C) *@This(), @ptrCast(&c.objc_msgSend))(self_, "initWithFormat:arguments:", format_, argList_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *String, va_list) callconv(.c) *@This(), @ptrCast(&c.objc_msgSend))(self_, "initWithFormat:arguments:", format_, argList_);
     // }
     pub fn initWithFormat_locale(self_: *@This(), format_: *String, locale_: ?*objc.Id) *@This() {
         return objc.msgSend(self_, "initWithFormat:locale:", *@This(), .{ format_, locale_ });
     }
     // pub fn initWithFormat_locale_arguments(self_: *@This(), format_: *String, locale_: ?*objc.Id, argList_: va_list) *@This() {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *String, ?*objc.Id, va_list) callconv(.C) *@This(), @ptrCast(&c.objc_msgSend))(self_, "initWithFormat:locale:arguments:", format_, locale_, argList_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *String, ?*objc.Id, va_list) callconv(.c) *@This(), @ptrCast(&c.objc_msgSend))(self_, "initWithFormat:locale:arguments:", format_, locale_, argList_);
     // }
     pub fn initWithValidatedFormat_validFormatSpecifiers_error(self_: *@This(), format_: *String, validFormatSpecifiers_: *String, error_: ?*?*Error) *@This() {
         return objc.msgSend(self_, "initWithValidatedFormat:validFormatSpecifiers:error:", *@This(), .{ format_, validFormatSpecifiers_, error_ });
@@ -988,10 +992,10 @@ pub const String = opaque {
         return objc.msgSend(self_, "initWithValidatedFormat:validFormatSpecifiers:locale:error:", *@This(), .{ format_, validFormatSpecifiers_, locale_, error_ });
     }
     // pub fn initWithValidatedFormat_validFormatSpecifiers_arguments_error(self_: *@This(), format_: *String, validFormatSpecifiers_: *String, argList_: va_list, error_: ?*?*Error) *@This() {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *String, *String, va_list, ?*?*Error) callconv(.C) *@This(), @ptrCast(&c.objc_msgSend))(self_, "initWithValidatedFormat:validFormatSpecifiers:arguments:error:", format_, validFormatSpecifiers_, argList_, error_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *String, *String, va_list, ?*?*Error) callconv(.c) *@This(), @ptrCast(&c.objc_msgSend))(self_, "initWithValidatedFormat:validFormatSpecifiers:arguments:error:", format_, validFormatSpecifiers_, argList_, error_);
     // }
     // pub fn initWithValidatedFormat_validFormatSpecifiers_locale_arguments_error(self_: *@This(), format_: *String, validFormatSpecifiers_: *String, locale_: ?*objc.Id, argList_: va_list, error_: ?*?*Error) *@This() {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *String, *String, ?*objc.Id, va_list, ?*?*Error) callconv(.C) *@This(), @ptrCast(&c.objc_msgSend))(self_, "initWithValidatedFormat:validFormatSpecifiers:locale:arguments:error:", format_, validFormatSpecifiers_, locale_, argList_, error_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *String, *String, ?*objc.Id, va_list, ?*?*Error) callconv(.c) *@This(), @ptrCast(&c.objc_msgSend))(self_, "initWithValidatedFormat:validFormatSpecifiers:locale:arguments:error:", format_, validFormatSpecifiers_, locale_, argList_, error_);
     // }
     pub fn initWithData_encoding(self_: *@This(), data_: *Data, encoding_: StringEncoding) *@This() {
         return objc.msgSend(self_, "initWithData:encoding:", *@This(), .{ data_, encoding_ });
@@ -1123,13 +1127,13 @@ pub const String = opaque {
         return objc.msgSend(self_, "precomposedStringWithCompatibilityMapping", *String, .{});
     }
     // pub fn stringEncodingForData_encodingOptions_convertedString_usedLossyConversion(data_: *Data, opts_: ?*Dictionary(StringEncodingDetectionOptionsKey, *objc.Id), string_: ?*?*String, usedLossyConversion_: ?*bool) StringEncoding {
-    //     return @as(*const fn (*c.objc_class, *c.objc_selector, *Data, ?*Dictionary(StringEncodingDetectionOptionsKey, *objc.Id), ?*?*String, ?*bool) callconv(.C) StringEncoding, @ptrCast(&c.objc_msgSend))(@This().InternalInfo.class(), "stringEncodingForData:encodingOptions:convertedString:usedLossyConversion:", data_, opts_, string_, usedLossyConversion_);
+    //     return @as(*const fn (*c.objc_class, *c.objc_selector, *Data, ?*Dictionary(StringEncodingDetectionOptionsKey, *objc.Id), ?*?*String, ?*bool) callconv(.c) StringEncoding, @ptrCast(&c.objc_msgSend))(@This().InternalInfo.class(), "stringEncodingForData:encodingOptions:convertedString:usedLossyConversion:", data_, opts_, string_, usedLossyConversion_);
     // }
     pub fn propertyList(self_: *@This()) *objc.Id {
         return objc.msgSend(self_, "propertyList", *objc.Id, .{});
     }
     // pub fn propertyListFromStringsFileFormat(self_: *@This()) ?*Dictionary {
-    //     return @as(*const fn (*@This(), *c.objc_selector) callconv(.C) ?*Dictionary, @ptrCast(&c.objc_msgSend))(self_, "propertyListFromStringsFileFormat);"
+    //     return @as(*const fn (*@This(), *c.objc_selector) callconv(.c) ?*Dictionary, @ptrCast(&c.objc_msgSend))(self_, "propertyListFromStringsFileFormat);"
     // }
     pub fn cString(self_: *@This()) ?*const u8 {
         return objc.msgSend(self_, "cString", ?*const u8, .{});
@@ -1147,7 +1151,7 @@ pub const String = opaque {
         return objc.msgSend(self_, "getCString:maxLength:", void, .{ bytes_, maxLength_ });
     }
     // pub fn getCString_maxLength_range_remainingRange(self_: *@This(), bytes_: *u8, maxLength_: UInteger, aRange_: Range, leftoverRange_: RangePointer) void {
-    //     return @as(*const fn (*@This(), *c.objc_selector, *u8, UInteger, Range, RangePointer) callconv(.C) void, @ptrCast(&c.objc_msgSend))(self_, "getCString:maxLength:range:remainingRange:", bytes_, maxLength_, aRange_, leftoverRange_);
+    //     return @as(*const fn (*@This(), *c.objc_selector, *u8, UInteger, Range, RangePointer) callconv(.c) void, @ptrCast(&c.objc_msgSend))(self_, "getCString:maxLength:range:remainingRange:", bytes_, maxLength_, aRange_, leftoverRange_);
     // }
     pub fn writeToFile_atomically(self_: *@This(), path_: *String, useAuxiliaryFile_: bool) bool {
         return objc.msgSend(self_, "writeToFile:atomically:", bool, .{ path_, useAuxiliaryFile_ });

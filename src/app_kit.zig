@@ -162,8 +162,8 @@ pub const EventTypeOtherMouseUp: EventType = 26;
 pub const EventTypeOtherMouseDragged: EventType = 27;
 pub const EventTypeGesture: EventType = 29;
 pub const EventTypeMagnify: EventType = 30;
-pub const EventTypeSwipe: EventType   = 31;
-pub const EventTypeRotate: EventType  = 18;
+pub const EventTypeSwipe: EventType = 31;
+pub const EventTypeRotate: EventType = 18;
 pub const EventTypeBeginGesture: EventType = 19;
 pub const EventTypeEndGesture: EventType = 20;
 pub const EventTypeSmartMagnify: EventType = 32;
@@ -171,6 +171,14 @@ pub const EventTypeQuickLook: EventType = 33;
 pub const EventTypePressure: EventType = 34;
 pub const EventTypeDirectTouch: EventType = 37;
 pub const EventTypeChangeMode: EventType = 38;
+
+pub const AutoresizingMaskOptions = UInteger;
+pub const ViewMinXMargin: AutoresizingMaskOptions = 1;
+pub const ViewWidthSizable: AutoresizingMaskOptions = 2;
+pub const ViewMaxXMargin: AutoresizingMaskOptions = 4;
+pub const ViewMinYMargin: AutoresizingMaskOptions = 8;
+pub const ViewHeightSizable: AutoresizingMaskOptions = 16;
+pub const ViewMaxYMargin: AutoresizingMaskOptions = 32;
 
 pub const WindowStyleMask = UInteger;
 pub const WindowStyleMaskBorderless: WindowStyleMask = 0;
@@ -186,6 +194,18 @@ pub const WindowStyleMaskUtilityWindow: WindowStyleMask = 16;
 pub const WindowStyleMaskDocModalWindow: WindowStyleMask = 64;
 pub const WindowStyleMaskNonactivatingPanel: WindowStyleMask = 128;
 pub const WindowStyleMaskHUDWindow: WindowStyleMask = 8192;
+
+pub const WindowTitleVisibility = Integer;
+pub const WindowTitleVisible: WindowTitleVisibility = 0;
+pub const WindowTitleHidden: WindowTitleVisibility = 1;
+
+pub const WindowButton = UInteger;
+pub const WindowButtonClose: WindowButton = 0;
+pub const WindowButtonMiniaturize: WindowButton = 1;
+pub const WindowButtonZoom: WindowButton = 2;
+pub const WindowButtonToolbar: WindowButton = 3;
+pub const WindowButtonDocument: WindowButton = 4;
+pub const WindowButtonFullScreen: WindowButton = 7;
 
 pub const Application = opaque {
     pub const InternalInfo = objc.ExternClass("NSApplication", @This(), Responder, &.{});
@@ -216,10 +236,13 @@ pub const Application = opaque {
         return objc.msgSend(self_, "setDelegate:", void, .{delegate_});
     }
     pub fn nextEventMatchingMask(self_: *@This(), mask_: EventMask, expiration_: ?*Date, run_loop_mode_: RunLoopMode, dequeue_: bool) ?*Event {
-        return objc.msgSend(self_, "nextEventMatchingMask:untilDate:inMode:dequeue:", ?*Event, .{mask_, expiration_, run_loop_mode_, dequeue_});
+        return objc.msgSend(self_, "nextEventMatchingMask:untilDate:inMode:dequeue:", ?*Event, .{ mask_, expiration_, run_loop_mode_, dequeue_ });
     }
     pub fn sendEvent(self_: *@This(), event_: *Event) void {
         return objc.msgSend(self_, "sendEvent:", void, .{event_});
+    }
+    pub fn updateWindows(self_: *@This()) void {
+        return objc.msgSend(self_, "updateWindows", void, .{});
     }
 };
 
@@ -243,7 +266,6 @@ pub const Date = opaque {
     pub const new = InternalInfo.new;
     pub const alloc = InternalInfo.alloc;
     pub const allocInit = InternalInfo.allocInit;
-
 
     pub fn distantPast() *Date {
         return objc.msgSend(@This().InternalInfo.class(), "distantPast", *Date, .{});
@@ -292,6 +314,21 @@ pub const Window = opaque {
     }
     pub fn setTitlebarAppearsTransparent(self_: *@This(), titlebarAppearsTransparent_: bool) void {
         return objc.msgSend(self_, "setTitlebarAppearsTransparent:", void, .{titlebarAppearsTransparent_});
+    }
+    pub fn titleVisibility(self_: *@This()) WindowTitleVisibility {
+        return objc.msgSend(self_, "titleVisibility", WindowTitleVisibility, .{});
+    }
+    pub fn setTitleVisibility(self_: *@This(), titleVisibility_: WindowTitleVisibility) void {
+        return objc.msgSend(self_, "setTitleVisibility:", void, .{titleVisibility_});
+    }
+    pub fn setMovableByWindowBackground(self_: *@This(), flag_: bool) void {
+        return objc.msgSend(self_, "setMovableByWindowBackground:", void, .{flag_});
+    }
+    pub fn performWindowDragWithEvent(self_: *@This(), event_: *Event) void {
+        return objc.msgSend(self_, "performWindowDragWithEvent:", void, .{event_});
+    }
+    pub fn standardWindowButton(self_: *@This(), button_: WindowButton) ?*Button {
+        return objc.msgSend(self_, "standardWindowButton:", ?*Button, .{button_});
     }
     pub fn contentView(self_: *@This()) ?*View {
         return objc.msgSend(self_, "contentView", ?*View, .{});
@@ -475,6 +512,9 @@ pub const View = opaque {
     pub fn initWithFrame(self_: *@This(), frameRect_: Rect) *@This() {
         return objc.msgSend(self_, "initWithFrame:", *@This(), .{frameRect_});
     }
+    pub fn setAutoresizingMask(self_: *@This(), mask_: AutoresizingMaskOptions) void {
+        return objc.msgSend(self_, "setAutoresizingMask:", void, .{mask_});
+    }
     pub fn layer(self_: *@This()) *ca.Layer {
         return objc.msgSend(self_, "layer", *ca.Layer, .{});
     }
@@ -486,6 +526,44 @@ pub const View = opaque {
     }
     pub fn window(self_: *@This()) *Window {
         return objc.msgSend(self_, "window", *Window, .{});
+    }
+};
+
+pub const WebViewConfiguration = opaque {
+    pub const InternalInfo = objc.ExternClass("WKWebViewConfiguration", @This(), ObjectInterface, &.{});
+    pub const as = InternalInfo.as;
+    pub const retain = InternalInfo.retain;
+    pub const release = InternalInfo.release;
+    pub const autorelease = InternalInfo.autorelease;
+    pub const new = InternalInfo.new;
+    pub const alloc = InternalInfo.alloc;
+    pub const allocInit = InternalInfo.allocInit;
+};
+
+pub const WebView = opaque {
+    pub const InternalInfo = objc.ExternClass("WKWebView", @This(), View, &.{});
+    pub const as = InternalInfo.as;
+    pub const retain = InternalInfo.retain;
+    pub const release = InternalInfo.release;
+    pub const autorelease = InternalInfo.autorelease;
+    pub const new = InternalInfo.new;
+    pub const alloc = InternalInfo.alloc;
+    pub const allocInit = InternalInfo.allocInit;
+
+    pub fn initWithFrame(self_: *@This(), frameRect_: Rect) *@This() {
+        return objc.msgSend(self_, "initWithFrame:", *@This(), .{frameRect_});
+    }
+    pub fn initWithFrame_configuration(self_: *@This(), frameRect_: Rect, configuration_: *WebViewConfiguration) *@This() {
+        return objc.msgSend(self_, "initWithFrame:configuration:", *@This(), .{ frameRect_, configuration_ });
+    }
+    pub fn loadHTMLString_baseURL(self_: *@This(), string_: *String, baseURL_: ?*ns.URL) void {
+        return objc.msgSend(self_, "loadHTMLString:baseURL:", void, .{ string_, baseURL_ });
+    }
+    pub fn setOpaque(self_: *@This(), opaque_: bool) void {
+        return objc.msgSend(self_, "setOpaque:", void, .{opaque_});
+    }
+    pub fn setValue_forKey(self_: *@This(), value_: ?*objc.Id, key_: *String) void {
+        return objc.msgSend(self_, "setValue:forKey:", void, .{ value_, key_ });
     }
 };
 
@@ -501,6 +579,27 @@ pub const Color = opaque {
 
     pub fn colorWithRed_green_blue_alpha(red_: cg.Float, green_: cg.Float, blue_: cg.Float, alpha_: cg.Float) *Color {
         return objc.msgSend(@This().InternalInfo.class(), "colorWithRed:green:blue:alpha:", *Color, .{ red_, green_, blue_, alpha_ });
+    }
+    pub fn clearColor() *Color {
+        return objc.msgSend(@This().InternalInfo.class(), "clearColor", *Color, .{});
+    }
+};
+
+pub const Button = opaque {
+    pub const InternalInfo = objc.ExternClass("NSButton", @This(), View, &.{});
+    pub const as = InternalInfo.as;
+    pub const retain = InternalInfo.retain;
+    pub const release = InternalInfo.release;
+    pub const autorelease = InternalInfo.autorelease;
+    pub const new = InternalInfo.new;
+    pub const alloc = InternalInfo.alloc;
+    pub const allocInit = InternalInfo.allocInit;
+
+    pub fn setFrameOrigin(self_: *@This(), point_: Point) void {
+        return objc.msgSend(self_, "setFrameOrigin:", void, .{point_});
+    }
+    pub fn frame(self_: *@This()) Rect {
+        return objc.msgSend(self_, "frame", Rect, .{});
     }
 };
 

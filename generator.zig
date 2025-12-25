@@ -1387,7 +1387,7 @@ fn Generator(comptime WriterType: type) type {
                             try self.writer.writeAll(", ");
                         try self.generateType(param_ty);
                     }
-                    try self.writer.writeAll(") callconv(.C) ");
+                    try self.writer.writeAll(") callconv(.c) ");
                     try self.generateType(f.return_type.*);
                 },
                 .generic => |g| {

@@ -36,5 +36,8 @@
             .hash = "122098b9174895f9708bc824b0f9e550c401892c40a900006459acf2cbf78acd99bb",
             .lazy = true,
         },
+        .wgpu_native_zig = .{
+            .path = "./wgpu_native_zig",
+        },
     },
 }

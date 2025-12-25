@@ -24,7 +24,7 @@ pub const mach = struct {
             method(self, block);
         }
         const method = @extern(
-            *const fn (*AppDelegate, *foundation.Block(fn () void)) callconv(.C) void,
+            *const fn (*AppDelegate, *foundation.Block(fn () void)) callconv(.c) void,
             .{ .name = "\x01-[MACHAppDelegate setRunBlock:]" },
         );
     };
@@ -43,7 +43,7 @@ pub const mach = struct {
             method_windowDidResize(self, block);
         }
         const method_windowDidResize = @extern(
-            *const fn (*WindowDelegate, *foundation.Block(fn () void)) callconv(.C) void,
+            *const fn (*WindowDelegate, *foundation.Block(fn () void)) callconv(.c) void,
             .{ .name = "\x01-[MACHWindowDelegate setBlock_windowDidResize:]" },
         );
 
@@ -51,7 +51,7 @@ pub const mach = struct {
             method_windowShouldClose(self, block);
         }
         const method_windowShouldClose = @extern(
-            *const fn (*WindowDelegate, *foundation.Block(fn () bool)) callconv(.C) void,
+            *const fn (*WindowDelegate, *foundation.Block(fn () bool)) callconv(.c) void,
             .{ .name = "\x01-[MACHWindowDelegate setBlock_windowShouldClose:]" },
         );
     };
@@ -85,7 +85,7 @@ pub const mach = struct {
             method_keyDown(self, block);
         }
         const method_keyDown = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_keyDown:]" },
         );
 
@@ -93,7 +93,7 @@ pub const mach = struct {
             method_insertText(self, block);
         }
         const method_insertText = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event, u32) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event, u32) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_insertText:]" },
         );
 
@@ -101,7 +101,7 @@ pub const mach = struct {
             method_keyUp(self, block);
         }
         const method_keyUp = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_keyUp:]" },
         );
 
@@ -109,7 +109,7 @@ pub const mach = struct {
             method_flagsChanged(self, block);
         }
         const method_flagsChanged = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_flagsChanged:]" },
         );
 
@@ -117,7 +117,7 @@ pub const mach = struct {
             method_magnify(self, block);
         }
         const method_magnify = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_magnify:]" },
         );
 
@@ -125,7 +125,7 @@ pub const mach = struct {
             method_mouseMoved(self, block);
         }
         const method_mouseMoved = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_mouseMoved:]" },
         );
 
@@ -133,7 +133,7 @@ pub const mach = struct {
             method_mouseDown(self, block);
         }
         const method_mouseDown = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_mouseDown:]" },
         );
 
@@ -141,7 +141,7 @@ pub const mach = struct {
             method_mouseUp(self, block);
         }
         const method_mouseUp = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_mouseUp:]" },
         );
 
@@ -149,7 +149,7 @@ pub const mach = struct {
             method_scrollWheel(self, block);
         }
         const method_scrollWheel = @extern(
-            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.C) void,
+            *const fn (*View, *foundation.Block(fn (*app_kit.Event) void)) callconv(.c) void,
             .{ .name = "\x01-[MACHView setBlock_scrollWheel:]" },
         );
     };
