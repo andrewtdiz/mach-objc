@@ -53,15 +53,16 @@ pub const Enum = struct {
     values: ValueList,
 
     pub fn init(allocator: std.mem.Allocator, name: []const u8) Enum {
+        _ = allocator;
         return Enum{
             .name = name,
             .ty = undefined,
-            .values = ValueList.init(allocator),
+            .values = .empty,
         };
     }
 
-    pub fn deinit(self: *Self) void {
-        self.values.deinit();
+    pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
+        self.values.deinit(allocator);
     }
 };
 
@@ -109,8 +110,8 @@ pub const Method = struct {
         };
     }
 
-    pub fn deinit(self: *Self) void {
-        self.params.deinit();
+    pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
+        self.params.deinit(allocator);
     }
 };
 
@@ -131,26 +132,27 @@ pub const Container = struct {
     ambiguous: bool, // Same typename as protocol and interface
 
     pub fn init(allocator: std.mem.Allocator, name: []const u8, is_interface: bool) Container {
+        _ = allocator;
         return Container{
             .name = name,
             .super = null,
-            .protocols = ContainerList.init(allocator),
-            .type_params = TypeParamList.init(allocator),
-            .properties = PropertyList.init(allocator),
-            .methods = MethodList.init(allocator),
+            .protocols = .empty,
+            .type_params = .empty,
+            .properties = .empty,
+            .methods = .empty,
             .is_interface = is_interface,
             .ambiguous = false,
         };
     }
 
-    pub fn deinit(self: *Self) void {
-        self.protocols.deinit();
-        self.type_params.deinit();
-        self.properties.deinit();
+    pub fn deinit(self: *Self, allocator: std.mem.Allocator) void {
+        self.protocols.deinit(allocator);
+        self.type_params.deinit(allocator);
+        self.properties.deinit(allocator);
         for (self.methods.items) |*method| {
-            method.deinit();
+            method.deinit(allocator);
         }
-        self.methods.deinit();
+        self.methods.deinit(allocator);
     }
 };
 
@@ -187,7 +189,7 @@ pub const Registry = struct {
         var it = map.iterator();
         while (it.next()) |entry| {
             var value = entry.value_ptr.*;
-            value.deinit();
+            value.deinit(self.allocator);
             self.allocator.destroy(value);
         }
         map.deinit();

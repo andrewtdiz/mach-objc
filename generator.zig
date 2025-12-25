@@ -483,7 +483,7 @@ pub const Parser = struct {
                 return self.parseTypeSuffix(.{
                     .function = .{
                         .return_type = return_type,
-                        .params = std.ArrayList(Type).init(self.allocator),
+                        .params = .empty,
                     },
                 }, is_const, true);
             },
@@ -510,12 +510,12 @@ pub const Parser = struct {
     }
 
     fn parseTypeList(self: *Self) (ParseError || error{OutOfMemory})!std.ArrayList(Type) {
-        var types = std.ArrayList(Type).init(self.allocator);
+        var types: std.ArrayList(Type) = .empty;
 
-        try types.append(try self.parseType());
+        try types.append(self.allocator, try self.parseType());
         while (self.lookahead.kind == .comma) {
             try self.match(.comma);
-            try types.append(try self.parseType());
+            try types.append(self.allocator, try self.parseType());
         }
 
         return types;
@@ -790,7 +790,7 @@ pub const Converter = struct {
             const childKind = getString(child, "kind");
             if (std.mem.eql(u8, childKind, "EnumConstantDecl")) {
                 const v = try self.convertEnumConstantDecl(child);
-                try e.values.append(v);
+                try e.values.append(registry.allocator, v);
             }
         }
     }
@@ -878,26 +878,26 @@ pub const Converter = struct {
 
     fn convertContainer(self: *Self, container: *Container, n: std.json.Value) !void {
         // TODO - better solution for this?
-        container.type_params.clearAndFree();
-        container.protocols.clearAndFree();
+        container.type_params.clearAndFree(registry.allocator);
+        container.protocols.clearAndFree(registry.allocator);
 
         for (getArray(n, "protocols")) |protocolJson| {
             const protocolName = getString(protocolJson, "name");
             const protocol = try registry.getProtocol(protocolName);
-            try container.protocols.append(protocol);
+            try container.protocols.append(registry.allocator, protocol);
         }
 
         for (getArray(n, "inner")) |child| {
             const childKind = getString(child, "kind");
             if (std.mem.eql(u8, childKind, "ObjCTypeParamDecl")) {
                 const type_param = try self.convertTypeParam(child);
-                try container.type_params.append(type_param);
+                try container.type_params.append(registry.allocator, type_param);
             } else if (std.mem.eql(u8, childKind, "ObjCPropertyDecl")) {
                 const property = try self.convertProperty(child);
-                try container.properties.append(property);
+                try container.properties.append(registry.allocator, property);
             } else if (std.mem.eql(u8, childKind, "ObjCMethodDecl")) {
                 const method = try self.convertMethod(child);
-                try container.methods.append(method);
+                try container.methods.append(registry.allocator, method);
             }
         }
     }
@@ -914,13 +914,13 @@ pub const Converter = struct {
 
     fn convertMethod(self: *Self, n: std.json.Value) !Method {
         const return_type = try self.convertType(getObject(n, "returnType").?);
-        var params = std.ArrayList(Param).init(registry.allocator);
+        var params: std.ArrayList(Param) = .empty;
 
         for (getArray(n, "inner")) |child| {
             const childKind = getString(child, "kind");
             if (std.mem.eql(u8, childKind, "ParmVarDecl")) {
                 const param = try self.convertParam(child);
-                try params.append(param);
+                try params.append(registry.allocator, param);
             }
         }
 
@@ -991,7 +991,10 @@ fn isKeyword(id: []const u8) bool {
 fn Generator(comptime WriterType: type) type {
     return struct {
         const Self = @This();
-        const WriteError = WriterType.Error;
+        const WriteError = switch (@typeInfo(WriterType)) {
+            .pointer => |ptr| ptr.child.Error,
+            else => WriterType.Error,
+        };
         const EnumList = std.ArrayList(*reg.Enum);
         const ContainerList = std.ArrayList(*reg.Container);
         const SelectorHashSet = std.StringHashMap(void);
@@ -1008,8 +1011,8 @@ fn Generator(comptime WriterType: type) type {
             return Self{
                 .allocator = allocator,
                 .writer = writer,
-                .enums = EnumList.init(allocator),
-                .containers = ContainerList.init(allocator),
+                .enums = .empty,
+                .containers = .empty,
                 .selectors = SelectorHashSet.init(allocator),
                 .namespace = undefined,
                 .allow_methods = undefined,
@@ -1017,8 +1020,8 @@ fn Generator(comptime WriterType: type) type {
         }
 
         fn deinit(self: *Self) void {
-            self.enums.deinit();
-            self.containers.deinit();
+            self.enums.deinit(self.allocator);
+            self.containers.deinit(self.allocator);
             self.selectors.deinit();
         }
 
@@ -1046,11 +1049,11 @@ fn Generator(comptime WriterType: type) type {
                 return;
             };
 
-            try self.enums.append(e);
+            try self.enums.append(self.allocator, e);
         }
 
         fn addContainer(self: *Self, container: *Container) !void {
-            try self.containers.append(container);
+            try self.containers.append(self.allocator, container);
 
             for (container.methods.items) |method| {
                 try self.selectors.put(method.name, {});
@@ -2334,7 +2337,9 @@ pub fn main() anyerror!void {
 
     try converter.convert(valueTree.value);
 
-    const stdout = std.io.getStdOut().writer();
+    var stdout_buffer: [4096]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout = &stdout_writer.interface;
     var generator = Generator(@TypeOf(stdout)).init(allocator, stdout);
     defer generator.deinit();
 
@@ -2345,6 +2350,7 @@ pub fn main() anyerror!void {
         .app_kit => try generateAppKit(&generator),
     }
     try generator.generate();
+    try stdout.flush();
 }
 
 test {

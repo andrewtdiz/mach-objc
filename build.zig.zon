@@ -1,6 +1,8 @@
 .{
-    .name = "mach-objc",
+    .name = .mach_objc,
     .version = "0.0.0",
+    .fingerprint = 0xd0611af9b1285187, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.15.2",
     .paths = .{
         "src",
         "build.zig",
