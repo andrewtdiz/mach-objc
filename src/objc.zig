@@ -31,7 +31,9 @@ pub const opt_class = objc_opt_class;
 pub const opt_isKindOfClass = objc_opt_isKindOfClass;
 
 // APIs that are part of libobjc's public API.
+pub const Sel = opaque {};
 pub const Class = opaque {};
+extern "objc" fn sel_registerName(name: [*:0]const u8) *Sel;
 pub const Id = opaque {
     pub const InternalInfo = struct {
         pub fn canCastTo(comptime Base: type) bool {
@@ -77,16 +79,16 @@ pub fn msgSend(receiver: anytype, comptime selector: []const u8, return_type: ty
             .{
                 .is_generic = false,
                 .is_noalias = false,
-                .type = [*:0]c_char,
+                .type = *Sel,
             },
         };
         for (@typeInfo(@TypeOf(args)).@"struct".fields) |field| {
             params = params ++
                 [_]std.builtin.Type.Fn.Param{.{
-                .is_generic = false,
-                .is_noalias = false,
-                .type = field.type,
-            }};
+                    .is_generic = false,
+                    .is_noalias = false,
+                    .type = field.type,
+                }};
         }
         break :init std.builtin.Type{
             .@"fn" = .{
@@ -102,8 +104,10 @@ pub fn msgSend(receiver: anytype, comptime selector: []const u8, return_type: ty
     const needs_fpret = comptime builtin.target.cpu.arch == .x86 and (return_type == f32 or return_type == f64);
     const needs_stret = comptime builtin.target.cpu.arch == .x86 and @sizeOf(return_type) > 16;
     const msg_send_fn_name = comptime if (needs_stret) "objc_msgSend_stret" else if (needs_fpret) "objc_msgSend_fpret" else "objc_msgSend";
-    const msg_send_fn = @extern(*const @Type(fn_type), .{ .name = msg_send_fn_name ++ "$" ++ selector });
-    return @call(.auto, msg_send_fn, .{ receiver, undefined } ++ args);
+    const selector_z = selector ++ "\x00";
+    const sel = sel_registerName(selector_z[0 .. selector_z.len - 1 :0]);
+    const msg_send_fn = @extern(*const @Type(fn_type), .{ .name = msg_send_fn_name });
+    return @call(.auto, msg_send_fn, .{ receiver, sel } ++ args);
 }
 
 pub fn ExternClass(comptime name: []const u8, T: type, SuperType: type, comptime protocols: []const type) type {
