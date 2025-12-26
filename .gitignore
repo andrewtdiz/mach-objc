@@ -17,3 +17,5 @@ zig-out/
 /build-*/
 /docgen_tmp/
 xcode-frameworks/
+
+bunffi/

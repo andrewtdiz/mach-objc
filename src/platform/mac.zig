@@ -650,7 +650,7 @@ const ViewCallbacks = struct {
         const key = keyFromKeycode(event.keyCode());
         if (key == window_types.Key.unknown) return;
         const mods = modifierStateFromFlags(event.modifierFlags());
-        std.debug.print("[Input] keyUp: {s}\n", .{@tagName(key)});
+        // std.debug.print("[Input] keyUp: {s}\n", .{@tagName(key)});
         appendKeyEvent(plat, key, .up, mods);
     }
 
