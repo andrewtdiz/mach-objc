@@ -5,7 +5,6 @@ const objc = mach.objc;
 const mac_platform = @import("platform/mac.zig");
 const SimpleSwapChain = @import("platform/simple_swap_chain.zig").SimpleSwapChain;
 const titlebar = @import("platform/titlebar.zig");
-const app_icon = @import("platform/app_icon.zig");
 const webview = @import("platform/webview.zig");
 const drag_overlay = @import("platform/drag_overlay.zig");
 
@@ -20,7 +19,7 @@ pub fn main() !void {
     try platform.init();
     platform.focusWindow();
 
-    app_icon.set("src/assets/appicon.png");
+    mac_platform.setAppIcon("src/assets/appicon.png");
 
     // Test clipboard functionality
     const existing = try platform.clipboardText(std.heap.page_allocator);

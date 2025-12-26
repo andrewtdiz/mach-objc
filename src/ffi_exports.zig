@@ -5,7 +5,6 @@ const objc = mach.objc;
 const mac_platform = @import("platform/mac.zig");
 const SimpleSwapChain = @import("platform/simple_swap_chain.zig").SimpleSwapChain;
 const titlebar = @import("platform/titlebar.zig");
-const app_icon = @import("platform/app_icon.zig");
 const webview = @import("platform/webview.zig");
 const drag_overlay = @import("platform/drag_overlay.zig");
 const window_types = @import("platform/types.zig");
@@ -322,7 +321,7 @@ export fn mach_clear_text_events() callconv(.c) void {
 // ============================================================================
 
 export fn mach_set_app_icon(path: [*:0]const u8) callconv(.c) void {
-    app_icon.set(std.mem.span(path));
+    mac_platform.setAppIcon(std.mem.span(path));
 }
 
 // ============================================================================

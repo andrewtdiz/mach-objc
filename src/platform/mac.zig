@@ -22,6 +22,15 @@ var active_platform: ?*MacPlatform = null;
 
 extern const NSPasteboardTypeString: objc.app_kit.PasteboardType;
 
+pub fn setAppIcon(path: [:0]const u8) void {
+    const ns_path = objc.foundation.String.stringWithUTF8String(path);
+    const image = objc.app_kit.Image.alloc().initWithContentsOfFile(ns_path) orelse return;
+    defer image.release();
+
+    const ns_app = objc.app_kit.Application.sharedApplication();
+    objc.objc.msgSend(ns_app, "setApplicationIconImage:", void, .{image});
+}
+
 const Pasteboard = opaque {
     pub const InternalInfo = objc.objc.ExternClass("NSPasteboard", Pasteboard, objc.foundation.ObjectInterface, &.{});
     pub const as = InternalInfo.as;
@@ -89,9 +98,6 @@ pub const MacPlatform = struct {
     mod_control_down: bool = false,
     mod_alt_down: bool = false,
     mod_command_down: bool = false,
-    key_g_down: bool = false,
-    key_r_down: bool = false,
-    key_s_down: bool = false,
 
     pub fn create() !*MacPlatform {
         const allocator = std.heap.page_allocator;
@@ -188,9 +194,18 @@ pub const MacPlatform = struct {
         _ = self.updateWindowSize();
     }
 
+    /// Surface descriptor source for Metal layer (kept at module level to ensure lifetime)
+    var surface_source_metal_layer: wgpu.SurfaceSourceMetalLayer = undefined;
+
     pub fn getWgpuSurfaceDescriptor(self: *MacPlatform) !wgpu.SurfaceDescriptor {
-        _ = self;
-        return error.UnsupportedPlatform;
+        const layer = self.layer orelse return error.MissingMetalLayer;
+        surface_source_metal_layer = .{
+            .layer = @ptrCast(layer),
+        };
+        return wgpu.SurfaceDescriptor{
+            .next_in_chain = @ptrCast(&surface_source_metal_layer),
+            .label = wgpu.StringView.fromSlice("Mac Surface"),
+        };
     }
 
     pub fn deinit(self: *MacPlatform) void {
@@ -318,12 +333,6 @@ pub const MacPlatform = struct {
         self.mouse_state.prev_left_button_down = self.mouse_state.left_button_down;
         self.mouse_state.prev_right_button_down = self.mouse_state.right_button_down;
         self.mouse_state.alt_key_down = self.mod_alt_down;
-    }
-
-    pub fn refreshKeyboardState(self: *MacPlatform) void {
-        updateKeyState(&self.keyboard_state.g, self.key_g_down);
-        updateKeyState(&self.keyboard_state.r, self.key_r_down);
-        updateKeyState(&self.keyboard_state.s, self.key_s_down);
     }
 
     pub fn setDvuiTextInputActive(self: *MacPlatform, active: bool) void {
@@ -616,7 +625,6 @@ const ViewCallbacks = struct {
         const action: PlatformKeyAction = if (event.isARepeat()) .repeat else .down;
         // std.debug.print("[Input] keyDown: {s} ({s})\n", .{ @tagName(key), @tagName(action) });
         appendKeyEvent(plat, key, action, mods);
-        updateLetterKeyState(plat, key, true);
     }
 
     pub fn insertText(block: *objc.foundation.BlockLiteral(u8), event: *objc.app_kit.Event, codepoint: u32) callconv(.c) void {
@@ -644,7 +652,6 @@ const ViewCallbacks = struct {
         const mods = modifierStateFromFlags(event.modifierFlags());
         std.debug.print("[Input] keyUp: {s}\n", .{@tagName(key)});
         appendKeyEvent(plat, key, .up, mods);
-        updateLetterKeyState(plat, key, false);
     }
 
     pub fn flagsChanged(block: *objc.foundation.BlockLiteral(u8), event: *objc.app_kit.Event) callconv(.c) void {
@@ -676,15 +683,6 @@ fn updateKeyState(state: *KeyState, down_now: bool) void {
     const previous = state.down;
     state.down = down_now;
     state.prev_down = previous;
-}
-
-fn updateLetterKeyState(plat: *MacPlatform, key: window_types.Key, pressed: bool) void {
-    switch (key) {
-        .g => plat.key_g_down = pressed,
-        .r => plat.key_r_down = pressed,
-        .s => plat.key_s_down = pressed,
-        else => {},
-    }
 }
 
 fn modifierStateFromFlags(flags: usize) window_types.Mod {
