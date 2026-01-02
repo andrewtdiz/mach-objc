@@ -2251,6 +2251,7 @@ fn generateAppKit(generator: anytype) !void {
     // try generator.addProtocol("NSDraggingDestination");
     // try generator.addProtocol("NSEditor");
     // try generator.addProtocol("NSImageDelegate");
+    
     // try generator.addProtocol("NSPreviewRepresentableActivityItem");
 }
 
